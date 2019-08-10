@@ -10,7 +10,7 @@ class CreateUserAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        user = request.data
+        user = request.query_params
         serializer = UserSerializer(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
