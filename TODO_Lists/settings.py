@@ -22,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'em3&aa(@l918-j(4!lv2$7&3so+%5ql1lwgatzv+z2=ax)no%d'
+AUTH_USER_MODEL = "users.User"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -109,6 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
   'DEFAULT_AUTHENTICATION_CLASSES': (
     'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    'rest_framework.authentication.SessionAuthentication',
   ),
 }
 
