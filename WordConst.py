@@ -1,0 +1,2 @@
+class Roles():
+    admin = 'admin'
