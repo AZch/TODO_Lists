@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager
+    AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
 from django.db import models, transaction
 
@@ -43,31 +43,32 @@ class TodoManager(models.Manager):
     def create_todo(self, name, userid, **extra_fields):
         return self._create_todo(name, userid, **extra_fields)
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=40, unique=True)
     role = models.CharField(max_length=50, default='')
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email']
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
         return self
 
 class Todotbl(models.Model):
-    idtodo = models.IntegerField(auto_created=True, unique=True)
     name = models.CharField(max_length=100)
-    data = models.CharField(max_length=1000, default='')
+    data_task = models.CharField(max_length=1000, default='', blank=True)
     priority = models.IntegerField(default=0)
     status = models.CharField(max_length=100, default=Status.new)
-    userid = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
 
-    object = TodoManager()
+    objects = TodoManager()
 
-    REQUIRED_FIELDS = ['name', 'userid', 'idtodo']
+    REQUIRED_FIELDS = ['name', 'status']
 
