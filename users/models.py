@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models, transaction
 
-from WordConst import Roles
+from WordConst import *
 
 
 class UserManager(BaseUserManager):
@@ -60,7 +60,8 @@ class Todotbl(models.Model):
     idtodo = models.IntegerField(auto_created=True, unique=True)
     name = models.CharField(max_length=100)
     data = models.CharField(max_length=1000, default='')
-    property = models.IntegerField(default=0)
+    priority = models.IntegerField(default=0)
+    status = models.CharField(max_length=100, default=Status.new)
     userid = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
