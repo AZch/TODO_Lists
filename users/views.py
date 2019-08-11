@@ -19,8 +19,8 @@ def authenticate_user(request):
     :return: result login
     """
     try:
-        email = request.query_params['email']
-        password = request.query_params['password']
+        email = request.data['email']
+        password = request.data['password']
 
         user = User.objects.get(email=email, password=password)
         if user:
@@ -28,7 +28,7 @@ def authenticate_user(request):
                 payload = jwt_payload_handler(user)
                 token = jwt.encode(payload, settings.SECRET_KEY)
                 user_details = {}
-                user_details['name'] = "%s" % (user.email,)
+                user_details['name'] = "%s %s" % (user.email, user.role)
                 user_details['token'] = token
                 user_logged_in.send(sender=user.__class__,
                                     request=request, user=user)

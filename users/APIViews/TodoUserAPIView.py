@@ -12,8 +12,12 @@ class TodoUserAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        todo = dict(request.query_params)
-        todo['name'] = ''.join(todo['name'])
+        """
+        create TODOs
+        :param request: data to create
+        :return: result create
+        """
+        todo = request.data
         todo['user'] = request.user.id
         serializer = TODOSerializer(data=todo)
         serializer.is_valid(raise_exception=True)
@@ -21,12 +25,22 @@ class TodoUserAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
+        """
+        get TODOs
+        :param request: data to get
+        :return: result get
+        """
         TODOs = DBtoObject.dictTODOs(Todotbl.objects.all()
                                      if request.user.role == Roles.admin
                                      else Todotbl.objects.filter(user=request.user))
         return Response(TODOs, status=status.HTTP_200_OK)
 
     def put(self, request):
+        """
+        edit TODOs
+        :param request: data to edit
+        :return: result edit
+        """
         Todotbl.objects.filter(id=request.data['id']).update(
             user=request.data['user']['id'],
             name=request.data['name'],
@@ -37,6 +51,11 @@ class TodoUserAPIView(APIView):
         return Response(DBtoObject.dictTODO(Todotbl.objects.get(id=request.data["id"])), status=status.HTTP_200_OK)
 
     def delete(self, request):
+        """
+        remove TODOs
+        :param request: data to remove
+        :return: result remove
+        """
         todo = Todotbl.objects.filter(id=request.data['id'])
         if todo:
             todo.delete()
