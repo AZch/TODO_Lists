@@ -32,6 +32,7 @@ validate_priority = lambda num_str: int(re.findall('\d+', num_str)[0]) \
                                     if len(re.findall('\d+', num_str)) == 1 \
                                     else 0
 
+# class to store filter element
 class FilterData():
     def __init__(self, columnName='', val=''):
         self.columnName = columnName
@@ -40,76 +41,82 @@ class FilterData():
         self.isLess = False
         self.isEqual = False
 
-class FilterTaskAPIView(APIView):
 
+class FilterTaskAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         """
         search filter in TODOs
         :param request: send in body data like {"column": "priority>=2,prioritydesc"} to "and" search (priorityasc,
-        priority<5,statusasc,statusdesc,status=new)
+        priority<5,statusasc,statusdesc,status=new,...)
         :return:
         """
         TODOs = Todotbl.objects.all() if request.user.role == Roles.admin else Todotbl.objects.filter(user=request.user)
         for filterData in re.split(Filter.separator, request.data[Filter.column]):
             filterDataMake = FilterData()
+            # set column to search
             if Filter.column_priority in filterData:
                 filterDataMake.columnName = Filter.column_priority
             elif Filter.column_status in filterData:
                 filterDataMake.columnName = Filter.column_status
 
-            if Filter.asc in filterData:
+            # what search (order by or filtering)
+            if Filter.asc in filterData:  # order by asc
                 filterDataMake.val = Filter.asc
                 TODOs = Todotbl.objects.filter(id__in=TODOs).order_by(filterDataMake.columnName).distinct()
-            elif Filter.desc in filterData:
+            elif Filter.desc in filterData:  # order by desc
                 filterDataMake.val = Filter.desc
                 TODOs = Todotbl.objects.filter(id__in=TODOs).order_by(filterDataMake.columnName).reverse().distinct()
             else:
-                if Filter.more in filterData:
+                if Filter.more in filterData:  # if more
                     filterDataMake.isMore = True
-                elif Filter.less in filterData:
+                elif Filter.less in filterData:  # if less
                     filterDataMake.isLess = True
-                if Filter.equal in filterData:
+
+                if Filter.equal in filterData:  # if equal
                     filterDataMake.isEqual = True
-                    if filterDataMake.isMore:
-                        if Filter.column_priority == filterDataMake.columnName:
+                    if filterDataMake.isMore:  # if more equal
+                        if Filter.column_priority == filterDataMake.columnName:  # if more equal in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            priority__gte=validate_priority(filterData)).distinct()
-                        elif Filter.column_status == filterDataMake.columnName:
+                        elif Filter.column_status == filterDataMake.columnName:  # if more equal in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__gte=validate_status(validate_word_status(filterData, '>=')))\
-                                                                       .distinct()
-                    elif filterDataMake.isLess:
-                        if Filter.column_priority == filterDataMake.columnName:
+                                                           status__gte=validate_status(
+                                                               validate_word_status(filterData, '>='))) \
+                                .distinct()
+                    elif filterDataMake.isLess:  # if less equal
+                        if Filter.column_priority == filterDataMake.columnName:   # if less equal in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            priority__lte=validate_priority(filterData)).distinct()
-                        elif Filter.column_status == filterDataMake.columnName:
+                        elif Filter.column_status == filterDataMake.columnName:  # if less equal in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__lte=validate_status(validate_word_status(filterData, '<='))).distinct()
-                    else:
-                        if Filter.column_priority == filterDataMake.columnName:
+                                                           status__lte=validate_status(
+                                                               validate_word_status(filterData, '<='))).distinct()
+                    else:  # if equal
+                        if Filter.column_priority == filterDataMake.columnName:  # if equal in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            priority=validate_priority(filterData)).distinct()
-                        elif Filter.column_status == filterDataMake.columnName:
+                        elif Filter.column_status == filterDataMake.columnName:  # if equal in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status=validate_status(validate_word_status(filterData, '='))).distinct()
+                                                           status=validate_status(
+                                                               validate_word_status(filterData, '='))).distinct()
 
-                else:
-                    if filterDataMake.isMore:
-                        if Filter.column_priority == filterDataMake.columnName:
+                else:  # if not equal, only more or less
+                    if filterDataMake.isMore:  # if more
+                        if Filter.column_priority == filterDataMake.columnName:  # if more in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            priority__gt=validate_priority(filterData)).distinct()
-                        elif Filter.column_status == filterDataMake.columnName:
+                        elif Filter.column_status == filterDataMake.columnName:  # if more in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__gt=validate_status(validate_word_status(filterData, '>'))).distinct()
-                    else:
-                        if filterDataMake.isMore:
-                            if Filter.column_priority == filterDataMake.columnName:
-                                TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                               priority__lt=validate_priority(filterData)).distinct()
-                            elif Filter.column_status == filterDataMake.columnName:
-                                TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                               status__lt=validate_status(validate_word_status(filterData, '<'))).distinct()
-            curr = DBtoObject.dictTODOs(TODOs)
+                                                           status__gt=validate_status(
+                                                               validate_word_status(filterData, '>'))).distinct()
+                    else:  # if less
+                        if Filter.column_priority == filterDataMake.columnName:  # if less in column priority
+                            TODOs = Todotbl.objects.filter(id__in=TODOs,
+                                                           priority__lt=validate_priority(filterData)).distinct()
+                        elif Filter.column_status == filterDataMake.columnName:  # if less in column status
+                            TODOs = Todotbl.objects.filter(id__in=TODOs,
+                                                           status__lt=validate_status(
+                                                               validate_word_status(filterData, '<'))).distinct()
         return Response(DBtoObject.dictTODOs(TODOs), status=status.HTTP_200_OK)
