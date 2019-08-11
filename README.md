@@ -12,10 +12,10 @@ Possible API requests (all information is transmitted through the body (specify 
     3. get Updates the user token and returns it
     3. put updates user information ({'user': {'email': 'new_email', ...}} is passed)
 4. / user / todo / - interaction with TODO (only authorized users)
-    4. post - adding a new TODO name field is required
-    4. get - getting all TODO user (for administrator all TODO)
-    4. put - change the user's TODO (all the information about TODO that is displayed on a get request is needed)
-    4. delete - delete one user TODO (the necessary parameter id TODO which will be deleted)
+    4. post - adding a new TODO name field is required
+    4. get - getting all TODO user (for administrator all TODO)
+    4. put - change the user's TODO (all the information about TODO that is displayed on a get request is needed)
+    4. delete - delete one user TODO (the necessary parameter id TODO which will be deleted)
 5. / user / filter / (only get) - filtering and sorting TODO (only authorized users). As a parameter, you must pass a string in which the filter and sorting will be described:
 > {
 > 'column': 'priority> = 2,prioritydesc'
