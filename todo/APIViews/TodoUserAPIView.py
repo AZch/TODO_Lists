@@ -4,7 +4,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from Converts import DBtoObject
 from users.models import User
 from users.serializers import Todotbl
 
@@ -61,7 +60,7 @@ class TodoUserAPIView(APIView):
                     status=request.data['status'],
                     priority=request.data['priority']
                 )
-                return Response(DBtoObject.dictTODO(Todotbl.objects.get(id=id)), status=status.HTTP_200_OK)
+                return Response(model_to_dict(Todotbl.objects.get(id=id)), status=status.HTTP_200_OK)
             except:
                 res = {
                     'error': 'please provide id todo'

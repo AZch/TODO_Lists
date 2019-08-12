@@ -40,7 +40,7 @@ def authenticate_user(request):
                 'error': 'can not authenticate with the given credentials or the account has been deactivated'
             }
             return Response(res, status=status.HTTP_403_FORBIDDEN)
-    except:
+    except KeyError:
         res = {
             'error': 'please provide a email or password'
         }

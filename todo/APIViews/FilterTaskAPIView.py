@@ -1,11 +1,11 @@
 import re
 
+from django.forms.models import model_to_dict
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from Converts import DBtoObject
 from WordConst import Filter
 from users.models import Todotbl, User
 
@@ -106,4 +106,4 @@ class FilterTaskAPIView(APIView):
                         elif Filter.column_status == filterDataMake.columnName:  # if less in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            status__lt=validate_word_status(filterData, '<')).distinct()
-        return Response(DBtoObject.dictTODOs(TODOs), status=status.HTTP_200_OK)
+        return Response(model_to_dict(TODOs), status=status.HTTP_200_OK)
