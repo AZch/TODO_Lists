@@ -17,7 +17,7 @@ Possible API requests (all information is transmitted through the body (specify 
     4. delete - delete one user TODO (the necessary parameter id TODO which will be deleted)
 5. / todo / create / - adding a new TODO name field is required
 6. / todo / all / - get all TODO users
-5. / todo / filter / (only get) - filtering and sorting TODO (only authorized users). As a parameter, you must pass a string in which the filter and sorting will be described:
+7. / todo / filter / (only get) - filtering and sorting TODO (only authorized users). As a parameter, you must pass a string in which the filter and sorting will be described:
 > {
 > 'column': 'priority> = 2,prioritydesc'
 >}
