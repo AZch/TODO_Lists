@@ -5,8 +5,6 @@ from django.contrib.auth.models import (
 )
 from django.db import models, transaction
 
-from WordConst import *
-
 
 class UserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -25,8 +23,9 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
-        extra_fields('role', Roles.admin)
+        extra_fields('role', User.ROLE_CHOICE[0][0])
         return self._create_user(email, password=password, **extra_fields)
+
 
 class TodoManager(models.Manager):
     def _create_todo(self, name, userid, **extra_fields):
@@ -43,9 +42,21 @@ class TodoManager(models.Manager):
     def create_todo(self, name, userid, **extra_fields):
         return self._create_todo(name, userid, **extra_fields)
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=40, unique=True)
-    role = models.CharField(max_length=50, default='')
+
+    ADMIN = 'ADMIN'
+    NOADMIN = 'NOADMIN'
+
+    ROLE_CHOICE = [
+        (ADMIN, 'admin'),
+        (NOADMIN, 'no admin')
+    ]
+
+    role = models.CharField(max_length=50,
+                            choices=ROLE_CHOICE,
+                            default=NOADMIN)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
 
@@ -58,11 +69,28 @@ class User(AbstractBaseUser, PermissionsMixin):
         super(User, self).save(*args, **kwargs)
         return self
 
+
 class Todotbl(models.Model):
     name = models.CharField(max_length=100)
     data_task = models.CharField(max_length=1000, default='', blank=True)
     priority = models.IntegerField(default=0)
-    status = models.CharField(max_length=100, default=Status.new)
+    NEW = 'NEW'
+    START = 'START'
+    WORK = 'WORK'
+    PAUSE = 'PAUSE'
+    END = 'END'
+    STATUS_CHOICES = [
+        (NEW, 'New'),
+        (START, 'Start'),
+        (WORK, 'Work'),
+        (PAUSE, 'Pause'),
+        (END, 'End')
+    ]
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=NEW
+    )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -71,4 +99,3 @@ class Todotbl(models.Model):
     objects = TodoManager()
 
     REQUIRED_FIELDS = ['name', 'status']
-
