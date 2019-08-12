@@ -86,16 +86,16 @@ WSGI_APPLICATION = 'TODO_Lists.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': LocalSettings.db_user,
+        'NAME': LocalSettings.db_name,
         'USER': LocalSettings.db_user,
         'PASSWORD': LocalSettings.db_password,
-        'HOST': LocalSettings.db_password,
+        'HOST': LocalSettings.db_host,
         'PORT': LocalSettings.db_port,
         'TEST': {
-            'NAME': LocalSettings.db_user,
+            'NAME': LocalSettings.db_name,
             'USER': LocalSettings.db_user,
             'PASSWORD': LocalSettings.db_password,
-            'HOST': LocalSettings.db_password,
+            'HOST': LocalSettings.db_host,
             'PORT': LocalSettings.db_port,
         }
     }

@@ -107,4 +107,4 @@ class FilterTaskAPIView(APIView):
                         elif Filter.column_status == filterDataMake.columnName:  # if less in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            status__lt=validate_word_status(filterData, '<')).distinct()
-        return Response(model_to_dict(TODOs), status=status.HTTP_200_OK)
+        return Response((model_to_dict(TODO) for TODO in TODOs), status=status.HTTP_200_OK)
