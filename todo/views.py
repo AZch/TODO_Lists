@@ -16,9 +16,13 @@ def get_all_todo(request):
     :param request: data to get
     :return: result get
     """
-    TODOs = model_to_dict(Todotbl.objects.all()
+    TODOs = (Todotbl.objects.all()
                           if request.user.role == User.ADMIN  # role admin
                           else Todotbl.objects.filter(user=request.user))
+    if isinstance(TODOs, Todotbl):
+        TODOs = model_to_dict(TODOs)
+    else:
+        TODOs = (model_to_dict(TODO) for TODO in TODOs)
     return Response(TODOs, status=status.HTTP_200_OK)
 
 
