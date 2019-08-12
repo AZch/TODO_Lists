@@ -82,7 +82,8 @@ class FilterTaskAPIView(APIView):
                                                            priority__lte=validate_priority(filterData)).distinct()
                         elif Filter.column_status == filterDataMake.columnName:  # if less equal in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__lte=validate_word_status(filterData, '<=')).distinct()
+                                                           status__lte=validate_word_status(filterData,
+                                                                                            '<=')).distinct()
                     else:  # if equal
                         if Filter.column_priority == filterDataMake.columnName:  # if equal in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,

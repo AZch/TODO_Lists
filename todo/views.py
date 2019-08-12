@@ -17,9 +17,10 @@ def get_all_todo(request):
     :return: result get
     """
     TODOs = model_to_dict(Todotbl.objects.all()
-                                 if request.user.role == User.ADMIN  # role admin
-                                 else Todotbl.objects.filter(user=request.user))
+                          if request.user.role == User.ADMIN  # role admin
+                          else Todotbl.objects.filter(user=request.user))
     return Response(TODOs, status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])

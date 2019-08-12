@@ -1,4 +1,4 @@
-class Filter():
+class Filter:
     column = 'column'
     column_priority = 'priority'
     column_status = 'status'

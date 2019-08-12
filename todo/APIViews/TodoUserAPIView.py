@@ -22,10 +22,10 @@ class TodoUserAPIView(APIView):
             except:
                 return False
 
-
     def get(self, request, id):
         """
         get TODOs
+        :param id: id todos
         :param request: data to get
         :return: result get
         """
@@ -48,6 +48,7 @@ class TodoUserAPIView(APIView):
     def put(self, request, id):
         """
         edit TODOs
+        :param id: id todos
         :param request: data to edit
         :return: result edit
         """
@@ -72,10 +73,10 @@ class TodoUserAPIView(APIView):
             }
             return Response(res)
 
-
     def delete(self, request, id):
         """
         remove TODOs
+        :param id: id todos
         :param request: data to remove
         :return: result remove
         """
@@ -94,8 +95,3 @@ class TodoUserAPIView(APIView):
                 'error': 'please access or provide to this id todo'
             }
             return Response(res)
-
-
-
-
-
