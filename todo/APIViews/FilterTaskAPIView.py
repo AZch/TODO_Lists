@@ -6,36 +6,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from Converts import DBtoObject
-from WordConst import Filter, Roles, Status
-from users.models import Todotbl
+from WordConst import Filter
+from users.models import Todotbl, User
 
 """
 validate count word status
 """
 validate_word_status = lambda filter_data, separator: filter_data.split(separator)[1] \
-                                                      if len(filter_data.split(separator)) == 2 \
-                                                      else ""
-
-"""
-validate status user
-"""
-validate_status = lambda str: str if str == Status.new else \
-                              str if str == Status.start else \
-                              str if str == Status.work else \
-                              str if str == Status.pause else \
-                              str if str == Status.end else ""
+    if len(filter_data.split(separator)) == 2 \
+    else ""
 
 """
 validate priority user
 """
 validate_priority = lambda num_str: int(re.findall('\d+', num_str)[0]) \
-                                    if len(re.findall('\d+', num_str)) == 1 \
-                                    else 0
+    if len(re.findall('\d+', num_str)) == 1 \
+    else 0
+
 
 # class to store filter element
 class FilterData():
-    def __init__(self, columnName='', val=''):
-        self.columnName = columnName
+    def __init__(self, column_name='', val=''):
+        self.columnName = column_name
         self.val = val
         self.isMore = False
         self.isLess = False
@@ -52,7 +44,7 @@ class FilterTaskAPIView(APIView):
         priority<5,statusasc,statusdesc,status=new,...)
         :return:
         """
-        TODOs = Todotbl.objects.all() if request.user.role == Roles.admin else Todotbl.objects.filter(user=request.user)
+        TODOs = Todotbl.objects.all() if request.user.role == User.ROLE_CHOICE[0][0] else Todotbl.objects.filter(user=request.user)
         for filterData in re.split(Filter.separator, request.data[Filter.column]):
             filterDataMake = FilterData()
             # set column to search
@@ -82,25 +74,22 @@ class FilterTaskAPIView(APIView):
                                                            priority__gte=validate_priority(filterData)).distinct()
                         elif Filter.column_status == filterDataMake.columnName:  # if more equal in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__gte=validate_status(
-                                                               validate_word_status(filterData, '>='))) \
+                                                           status__gte=validate_word_status(filterData, '>=')) \
                                 .distinct()
                     elif filterDataMake.isLess:  # if less equal
-                        if Filter.column_priority == filterDataMake.columnName:   # if less equal in column priority
+                        if Filter.column_priority == filterDataMake.columnName:  # if less equal in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            priority__lte=validate_priority(filterData)).distinct()
                         elif Filter.column_status == filterDataMake.columnName:  # if less equal in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__lte=validate_status(
-                                                               validate_word_status(filterData, '<='))).distinct()
+                                                           status__lte=validate_word_status(filterData, '<=')).distinct()
                     else:  # if equal
                         if Filter.column_priority == filterDataMake.columnName:  # if equal in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            priority=validate_priority(filterData)).distinct()
                         elif Filter.column_status == filterDataMake.columnName:  # if equal in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status=validate_status(
-                                                               validate_word_status(filterData, '='))).distinct()
+                                                           status=validate_word_status(filterData, '=')).distinct()
 
                 else:  # if not equal, only more or less
                     if filterDataMake.isMore:  # if more
@@ -109,14 +98,12 @@ class FilterTaskAPIView(APIView):
                                                            priority__gt=validate_priority(filterData)).distinct()
                         elif Filter.column_status == filterDataMake.columnName:  # if more in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__gt=validate_status(
-                                                               validate_word_status(filterData, '>'))).distinct()
+                                                           status__gt=validate_word_status(filterData, '>')).distinct()
                     else:  # if less
                         if Filter.column_priority == filterDataMake.columnName:  # if less in column priority
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
                                                            priority__lt=validate_priority(filterData)).distinct()
                         elif Filter.column_status == filterDataMake.columnName:  # if less in column status
                             TODOs = Todotbl.objects.filter(id__in=TODOs,
-                                                           status__lt=validate_status(
-                                                               validate_word_status(filterData, '<'))).distinct()
+                                                           status__lt=validate_word_status(filterData, '<')).distinct()
         return Response(DBtoObject.dictTODOs(TODOs), status=status.HTTP_200_OK)

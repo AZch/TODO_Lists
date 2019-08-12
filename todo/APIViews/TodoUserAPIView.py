@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from Converts import DBtoObject
-from WordConst import Roles
-from users.serializers import TODOSerializer, Todotbl
+from todo.serializers import TODOSerializer
+from users.serializers import Todotbl
 
 
 class TodoUserAPIView(APIView):
@@ -23,17 +23,6 @@ class TodoUserAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def get(self, request):
-        """
-        get TODOs
-        :param request: data to get
-        :return: result get
-        """
-        TODOs = DBtoObject.dictTODOs(Todotbl.objects.all()
-                                     if request.user.role == Roles.admin
-                                     else Todotbl.objects.filter(user=request.user))
-        return Response(TODOs, status=status.HTTP_200_OK)
 
     def put(self, request):
         """
@@ -63,3 +52,6 @@ class TodoUserAPIView(APIView):
         else:
             res = {'res': 'cant find TODO'}
         return Response(res, status=status.HTTP_200_OK)
+
+
+
