@@ -1,57 +1,102 @@
+from django.forms.models import model_to_dict
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from Converts import DBtoObject
-from todo.serializers import TODOSerializer
+from users.models import User
 from users.serializers import Todotbl
 
 
 class TodoUserAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request):
-        """
-        create TODOs
-        :param request: data to create
-        :return: result create
-        """
-        todo = request.data
-        todo['user'] = request.user.id
-        serializer = TODOSerializer(data=todo)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def test_access(self, id_user, id_todo):
+        user = User.objects.get(id=id_user)
+        if user.role == User.ADMIN:
+            return True
+        else:
+            try:
+                Todotbl.objects.get(id=id_todo, user_id=id_user)
+                return True
+            except:
+                return False
 
-    def put(self, request):
+
+    def get(self, request, id):
+        """
+        get TODOs
+        :param request: data to get
+        :return: result get
+        """
+
+        if self.test_access(request.user.id, id):
+            try:
+                todo = Todotbl.objects.get(id=id)
+                return Response(model_to_dict(todo), status=status.HTTP_200_OK)
+            except:
+                res = {
+                    'error': 'please provide id todo'
+                }
+                return Response(res)
+        else:
+            res = {
+                'error': 'please access or provide to this id todo'
+            }
+            return Response(res)
+
+    def put(self, request, id):
         """
         edit TODOs
         :param request: data to edit
         :return: result edit
         """
-        Todotbl.objects.filter(id=request.data['id']).update(
-            user=request.data['user']['id'],
-            name=request.data['name'],
-            data_task=request.data['data_task'],
-            status=request.data['status'],
-            priority=request.data['priority']
-        )
-        return Response(DBtoObject.dictTODO(Todotbl.objects.get(id=request.data["id"])), status=status.HTTP_200_OK)
+        if self.test_access(request.user.id, id):
+            try:
+                Todotbl.objects.filter(id=id).update(
+                    user=request.data['user']['id'],
+                    name=request.data['name'],
+                    data_task=request.data['data_task'],
+                    status=request.data['status'],
+                    priority=request.data['priority']
+                )
+                return Response(DBtoObject.dictTODO(Todotbl.objects.get(id=id)), status=status.HTTP_200_OK)
+            except:
+                res = {
+                    'error': 'please provide id todo'
+                }
+                return Response(res)
+        else:
+            res = {
+                'error': 'please access or provide to this id todo'
+            }
+            return Response(res)
 
-    def delete(self, request):
+
+    def delete(self, request, id):
         """
         remove TODOs
         :param request: data to remove
         :return: result remove
         """
-        todo = Todotbl.objects.filter(id=request.data['id'])
-        if todo:
-            todo.delete()
-            res = {'res': 'complete delete'}
+        if self.test_access(request.user.id, id):
+            try:
+                Todotbl.objects.filter(id=id).delete()
+                res = {'res': 'complete delete'}
+                return Response(res, status=status.HTTP_200_OK)
+            except:
+                res = {
+                    'error': 'please provide id todo'
+                }
+                return Response(res)
         else:
-            res = {'res': 'cant find TODO'}
-        return Response(res, status=status.HTTP_200_OK)
+            res = {
+                'error': 'please access or provide to this id todo'
+            }
+            return Response(res)
+
+
 
 
 

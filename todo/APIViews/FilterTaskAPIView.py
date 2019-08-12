@@ -44,7 +44,7 @@ class FilterTaskAPIView(APIView):
         priority<5,statusasc,statusdesc,status=new,...)
         :return:
         """
-        TODOs = Todotbl.objects.all() if request.user.role == User.ROLE_CHOICE[0][0] else Todotbl.objects.filter(user=request.user)
+        TODOs = Todotbl.objects.all() if request.user.role == User.ADMIN else Todotbl.objects.filter(user=request.user)
         for filterData in re.split(Filter.separator, request.data[Filter.column]):
             filterDataMake = FilterData()
             # set column to search

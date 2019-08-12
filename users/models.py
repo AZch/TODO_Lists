@@ -23,7 +23,7 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
-        extra_fields('role', User.ROLE_CHOICE[0][0])
+        extra_fields('role', User.ADMIN)
         return self._create_user(email, password=password, **extra_fields)
 
 
@@ -80,11 +80,11 @@ class Todotbl(models.Model):
     PAUSE = 'PAUSE'
     END = 'END'
     STATUS_CHOICES = [
-        (NEW, 'New'),
-        (START, 'Start'),
-        (WORK, 'Work'),
-        (PAUSE, 'Pause'),
-        (END, 'End')
+        (NEW, 'new'),
+        (START, 'start'),
+        (WORK, 'work'),
+        (PAUSE, 'pause'),
+        (END, 'end')
     ]
     status = models.CharField(
         max_length=20,
