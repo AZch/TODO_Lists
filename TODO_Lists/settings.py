@@ -13,7 +13,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import datetime
 import os
 
+import LocalSettings
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -83,11 +86,18 @@ WSGI_APPLICATION = 'TODO_Lists.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'usertodo', #os.path.join(BASE_DIR, 'db.sqlite3'),
-        'USER': 'todo',
-        'PASSWORD': 'somepass',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': LocalSettings.db_user,
+        'USER': LocalSettings.db_user,
+        'PASSWORD': LocalSettings.db_password,
+        'HOST': LocalSettings.db_password,
+        'PORT': LocalSettings.db_port,
+        'TEST': {
+            'NAME': LocalSettings.db_user,
+            'USER': LocalSettings.db_user,
+            'PASSWORD': LocalSettings.db_password,
+            'HOST': LocalSettings.db_password,
+            'PORT': LocalSettings.db_port,
+        }
     }
 }
 
