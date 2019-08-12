@@ -1,6 +1,3 @@
-class Roles():
-    admin = 'admin'
-
 class Filter():
     column = 'column'
     column_priority = 'priority'
@@ -15,9 +12,3 @@ class Filter():
     less = '<'
     equal = '='
 
-class Status():
-    new = 'new'
-    start = 'start'
-    work = 'work'
-    pause = 'pause'
-    end = 'end'
